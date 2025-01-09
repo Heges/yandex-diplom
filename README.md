@@ -1,93 +1,107 @@
-# diplom
+# Momo Store aka Пельменная №2
 
+<img width="900" alt="image" src="https://user-images.githubusercontent.com/9394918/167876466-2c530828-d658-4efe-9064-825626cc6db5.png">
 
+## Frontend
 
-## Getting started
-
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
-
-```
-cd existing_repo
-git remote add origin https://gitlab.praktikum-services.ru/std-030-18/diplom.git
-git branch -M main
-git push -uf origin main
+```bash
+npm install
+NODE_ENV=production VUE_APP_API_URL=http://localhost:8081 npm run serve
 ```
 
-## Integrate with your tools
+## Backend
 
-- [ ] [Set up project integrations](https://gitlab.praktikum-services.ru/std-030-18/diplom/-/settings/integrations)
+```bash
+go run ./cmd/api
+go test -v ./... 
+```
 
-## Collaborate with your team
+## [Momo-store](https://momo-store.mooo.com/)
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+## CI/CD
 
-## Test and Deploy
+- используется единый [репозиторий](https://gitlab.praktikum-services.ru/antona-zateyev/momo-store)
+- развертывание приложение осуществляется с использованием [Downstream pipeline](https://docs.gitlab.com/ee/ci/pipelines/downstream_pipelines.html#parent-child-pipelines) 
+- при изменениях в соответствующих директориях триггерятся pipeline для backend, frontend и infrastructure (momo-store-helm)
+- backend и frontend проходят этапы сборки, тестирования, релиза, деплоя в dev-окружение (docker-compose) и prod-окружение (k8s)
+- momo-store-helm проходит этапы релиза и деплоя в prod-окружение (k8s)
+- trunk-based development
 
-Use the built-in continuous integration in GitLab.
+## Versioning
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+- [SemVer 2.0.0](https://semver.org/lang/ru/)
+- мажорные и минорные версии приложения изменяются вручную в файлах `backend/.gitlab-ci.yaml` и `frontend/.gitlab-ci.yaml` в переменной `VERSION`
+- патч-версии изменяются автоматически на основе переменной `CI_PIPELINE_ID`
+- для инфраструктуры версия приложения изменяется вручную в чарте `infrastructure/momo-store-helm/Chart.yaml`
 
-***
+## Infrastructure
 
-# Editing this README
+- код ---> [Gitlab](https://gitlab.praktikum-services.ru/)
+- helm-charts ---> [Nexus](https://nexus.praktikum-services.ru/)
+- анализ кода ---> [SonarQube](https://sonarqube.praktikum-services.ru/)
+- docker-images ---> [Gitlab Container Registry](https://gitlab.praktikum-services.ru/antona-zateyev/momo-store/container_registry)
+- терраформ бэкэнд и статика ---> [Yandex Object Storage](https://cloud.yandex.ru/services/storage)
+- продакшн ---> [Yandex Managed Service for Kubernetes](https://cloud.yandex.ru/services/managed-kubernetes)
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+## Init kubernetes
 
-## Suggestions for a good README
+- клонировать репозиторий на машину с установленным terraform
+- через консоль Yandex Cloud создать сервисный аккаунт с ролью `editor`, получить статический ключ доступа, сохранить секретный ключ в файле `infrastructure/terraform/backend.tfvars`
+- получить [iam-token](https://cloud.yandex.ru/docs/iam/operations/iam-token/create), сохранить в файле `infrastructure/terraform/secret.tfvars`
+- через консоль Yandex Cloud создать Object Storage, внести параметры подключения в файл `infrastructure/terraform/provider.tf`
+- выполнить следующие комманды:
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+```
+cd infrastructure/terraform
+terraform init -backend-config=backend.tfvars
+terraform apply -var-file="secret.tfvars"
+```
 
-## Name
-Choose a self-explaining name for your project.
+## Init production
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+```
+# создаем базовый namespace
+kubectl create namespace momo-store
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+# устанавливаем cert-manager
+cd infrastructure/momo-store-helm/
+helm repo add jetstack https://charts.jetstack.io
+helm repo update
+helm upgrade --install --atomic -n momo-store cert-manager jetstack/cert-manager --version v1.9.1 --set installCRDs=true
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+# сохраняем креды для docker-registry
+kubectl create secret generic -n momo-store docker-config-secret --from-file=.dockerconfigjson="/home/user/.docker/config.json" --type=kubernetes.io/dockerconfigjson 
+# устанавливаем приложение, указав версии backend и frontend
+helm dependency build
+helm upgrade --install --atomic -n momo-store momo-store . --set backend.image.tag=latest --set frontend.image.tag=latest
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+# смотрим IP load balancer, прописываем А-записи для приложения и мониторинга
+kubectl get svc
+```
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+## [Monitoring](https://grafana.momo-store.mooo.com/)
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+- admin / uhfafyfltdjgc
+- включен в состав helm-chart приложения, зависимости прописаны в `infrastructure/momo-store-helm/Chart.yaml`
+- [infrastructure](https://grafana.momo-store.mooo.com/d/CgCw8jKZz3/golang-metrics-for-prometheus-operator?orgId=1&refresh=5s)
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+<img width="500" alt="image" src="https://storage.yandexcloud.net/momo-store-zateevant/monitoring/infrastructure.JPG">
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+- [frontend](https://grafana.momo-store.mooo.com/d/MsjffzSZz/nginx-exporter?orgId=1&refresh=5s)
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+<img width="500" alt="image" src="https://storage.yandexcloud.net/momo-store-zateevant/monitoring/frontend.JPG">
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+- [backend](https://grafana.momo-store.mooo.com/d/5i5VYXVVk/momo-store?orgId=1&from=now-1h&to=now)
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+<img width="500" alt="image" src="https://storage.yandexcloud.net/momo-store-zateevant/monitoring/backend.JPG">
 
-## License
-For open source projects, say how it is licensed.
+- [logs](https://grafana.momo-store.mooo.com/d/liz0yRCZz/loki-logs-dashboard?var-namespace=momo-store&var-pod=All&var-search=)
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+<img width="500" alt="image" src="https://storage.yandexcloud.net/momo-store-zateevant/monitoring/logs.JPG">
+
+
+## Backlog
+
+- добавить тестовое окружение (отдельный кластер или отдельный namespace)
+- вывести мониторинг из чарта самого приложения (ускорить деплой)
+- поднять Vault для хранения секретов
