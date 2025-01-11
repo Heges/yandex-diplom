@@ -33,7 +33,7 @@ resource "yandex_iam_service_account" "kubernetes" {
 }
 
 resource "yandex_resourcemanager_folder_iam_binding" "editor" {
- folder_id = var.folder_id
+ folder_id = var.yc_folder_id
  role      = "editor"
  members   = [
    "serviceAccount:${yandex_iam_service_account.kubernetes.id}"
@@ -41,7 +41,7 @@ resource "yandex_resourcemanager_folder_iam_binding" "editor" {
 }
 
 resource "yandex_resourcemanager_folder_iam_binding" "images-puller" {
- folder_id = var.folder_id
+ folder_id = var.yc_folder_id
  role      = "container-registry.images.puller"
  members   = [
    "serviceAccount:${yandex_iam_service_account.kubernetes.id}"
