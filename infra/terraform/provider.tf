@@ -8,10 +8,10 @@ terraform {
 
   backend "s3" {
     endpoint   = "storage.yandexcloud.net"
-    bucket     = ""
+    bucket     = "kms-backet"
     region     = "ru-central1"
-    key        = ""
-    access_key = ""
+    key        = "YCOAtbY6lNidlTsSWhYcudU1FPg2ktbRWpR-qSZc"
+    access_key = "y0_AgAAAAAzqi7KAATuwQAAAAELMnMnAABIkgQ1aqZBuKJC7way-GwlP38bwg"
   # secret_key in backend.tfvars
 
     skip_region_validation      = true
@@ -21,7 +21,7 @@ terraform {
 
 provider "yandex" {
   token     = var.iam_token #secret.tfvars
-  cloud_id  = var.cloud_id
-  folder_id = var.folder_id
+  cloud_id  = var.yc_token
+  folder_id = var.yc_folder_id
   zone      = var.zone
 }

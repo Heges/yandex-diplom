@@ -1,14 +1,14 @@
-variable "iam_token" {
+variable "yc_token" {
   type        = string
   sensitive   = true
 }
 
-variable "cloud_id" {
+variable "yc_cloud_id" {
   type        = string
   sensitive   = true
 }
 
-variable "folder_id" {
+variable "yc_folder_id" {
   type        = string
   sensitive   = true
 }
