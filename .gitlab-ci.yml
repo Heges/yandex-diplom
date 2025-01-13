@@ -1,0 +1,21 @@
+stages:
+  - downstream
+frontend:
+  stage: downstream
+  trigger:
+    include:
+      - local: '/frontend/.gitlab-ci.yml'
+    strategy: depend
+  only:
+    changes:
+      - frontend/**/*
+backend:
+  stage: downstream
+  trigger:
+    include:
+      - local: '/backend/.gitlab-ci.yml'
+    strategy: depend
+  only:
+    changes:
+      - backend/**/*
+  
