@@ -8,11 +8,12 @@ resource "yandex_kubernetes_cluster" "k8s_zonal_cluster" {
    }
    public_ip = true
  }
- service_account_id      = yandex_iam_service_account.kubernetes.id
- node_service_account_id = yandex_iam_service_account.kubernetes.id
+ 
+ service_account_id      = yandex_iam_service_account.k8s.id
+ node_service_account_id = yandex_iam_service_account.k8s.id
    depends_on = [
-     yandex_resourcemanager_folder_iam_binding.editor,
-     yandex_resourcemanager_folder_iam_binding.images-puller
+     yandex_resourcemanager_folder_iam_binding.edit,
+     yandex_resourcemanager_folder_iam_binding.image
    ]
 }
 
@@ -27,24 +28,24 @@ resource "yandex_vpc_subnet" "k8s-subnet" {
  network_id     = yandex_vpc_network.k8s-network.id
 }
 
-resource "yandex_iam_service_account" "kubernetes" {
- name        = "kubernetes"
- description = "Service account for manage kubernetes"
+resource "yandex_iam_service_account" "k8s" {
+ name        = "k8s"
+ description = "Сервисный аккаунт для управления k8s"
 }
 
-resource "yandex_resourcemanager_folder_iam_binding" "editor" {
+resource "yandex_resourcemanager_folder_iam_binding" "edit" {
  folder_id = var.yc_folder_id
  role      = "editor"
  members   = [
-   "serviceAccount:${yandex_iam_service_account.kubernetes.id}"
+   "serviceAccount:${yandex_iam_service_account.k8s.id}"
  ]
 }
 
-resource "yandex_resourcemanager_folder_iam_binding" "images-puller" {
+resource "yandex_resourcemanager_folder_iam_binding" "image" {
  folder_id = var.yc_folder_id
  role      = "container-registry.images.puller"
  members   = [
-   "serviceAccount:${yandex_iam_service_account.kubernetes.id}"
+   "serviceAccount:${yandex_iam_service_account.k8s.id}"
  ]
 }
 

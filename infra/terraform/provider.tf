@@ -7,20 +7,22 @@ terraform {
   }
 
   backend "s3" {
+    # Добавьте в переменные окружения идентификатор ключа и секретный ключ
+    # export ACCESS_KEY="<идентификатор_ключа>"
+    # export SECRET_KEY="<секретный_ключ>"
+    # terraform init -backend-config="access_key=$ACCESS_KEY" -backend-config="secret_key=$SECRET_KEY"
     endpoint   = "storage.yandexcloud.net"
-    bucket     = "kms-backet"
+    bucket     = "kns-backet"
     region     = "ru-central1-a"
     key        = "terraform.tfstate"
-    access_key = "YCAJEdl69cHyy0sH4TD8OdZRX"
-    secret_key = "YCOAtbY6lNidlTsSWhYcudU1FPg2ktbRWpR-qSZc"
-
     skip_region_validation      = true
     skip_credentials_validation = true
   }
 } 
 
 provider "yandex" {
-  token     = var.yc_token #secret.tfvars
+  #указывается в value.tfvars
+  token     = var.yc_token
   cloud_id  = var.yc_cloud_id
   folder_id = var.yc_folder_id
   zone      = var.zone
