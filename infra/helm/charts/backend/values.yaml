@@ -5,8 +5,7 @@ annotations:
   prometheus.io/port: "8081"
   prometheus.io/scrape: "true"
 replicas: 2
-service:
-  port: 8081
+port: 8081
 environment: production
 strategy:
   type: RollingUpdate

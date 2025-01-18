@@ -31,15 +31,19 @@ deploy-to-k8s:
   image: alpine/helm:3.16.2
   before_script:
     - apk add jq
+    - cd infra/helm
     - mkdir -p .kube
-    - echo "$KUBECONFIG" | base64 -d > .kube/config
+    - echo "$KUBECONF" | base64 -d > .kube/config
+    - export KUBECONFIG=.kube/config
     - chmod 600 .kube/config
+    - cat .kube/config
     - export BACKEND=$(helm get values -n momo-store momo-store -o json | jq -r .backend.image.tag)
     - export FRONTEND=$(helm get values -n momo-store momo-store -o json | jq -r .frontend.image.tag)
   script:
-    - cd infra/helm
+    - helm repo add nexus "$NEXUS_HELM_REPO" --username "$NEXUS_REPO_USER" --password "$NEXUS_REPO_PASS"
     - helm repo update
-    - helm upgrade --dependency-update --install --atomic -n momo-store momo-store . --set backend.image.tag=$BACKEND --set frontend.image.tag=$FRONTEND
-    - rm ~/.kube/config
+    - helm search repo nexus
+    - helm upgrade --dependency-update --install --atomic -n momo-store momo-store nexus/momo-store --set backend.image.tag=$BACKEND --set frontend.image.tag=$FRONTEND 
+    - rm .kube/config
   when:
     manual

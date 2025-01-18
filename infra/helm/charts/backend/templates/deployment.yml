@@ -34,10 +34,17 @@ spec:
           imagePullPolicy: {{ .Values.global.imagePullPolicy }}
           ports:
             - name: {{ .Chart.Name }}
-              containerPort: {{ .Values.service.port }}
+              containerPort: {{ .Values.port }}
           resources:
-{{ toYaml .Values.resources | indent 12 }}
+            requests:
+              memory: {{ .Values.resources.requests.memory }}
+              cpu: {{ .Values.resources.requests.cpu }}
           livenessProbe:
-{{ toYaml .Values.livenessProbe | indent 12 }}
+            httpGet:
+              path: {{ .Values.livenessProbe.httpGet.path }}
+              port: {{ .Values.livenessProbe.httpGet.port }} 
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds}}
+            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds}}
+            failureThreshold: {{ .Values.livenessProbe.failureThreshold}}
       imagePullSecrets:
         - name: docker-config-secret
