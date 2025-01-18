@@ -24,7 +24,7 @@ release:
     - helm lint .
     - helm package --dependency-update .
   script:
-    - "curl -u \"$NEXUS_REPO_USER:$NEXUS_REPO_PASS\" --upload-file \"/opt/k8s-helm/sausage-store-$VERSION.tgz\" \"$NEXUS_REPO_URL/repository/$NEXUS_REPO_HELM/momo-store-$VERSION.tgz\" -v"
+    - "curl -u \"$NEXUS_REPO_USER:$NEXUS_REPO_PASS\" --upload-file \"/builds/std-030-18/diplom/infra/helm/momo-store-$VERSION.tgz\" \"$NEXUS_REPO_URL/repository/$NEXUS_REPO_HELM/momo-store-$VERSION.tgz\" -v"
 
 deploy-to-k8s:
   stage: deploy
