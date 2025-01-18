@@ -18,4 +18,12 @@ backend:
   only:
     changes:
       - backend/**/*
-  
+  helm:
+  stage: downstream
+  trigger:
+    include:
+      - local: '/infra/helm/.gitlab-ci.yml'
+    strategy: depend
+  only:
+    changes:
+      - infra/helm/**/*
