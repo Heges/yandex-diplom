@@ -1,0 +1,11 @@
+app:
+  host: momo.r-shy-t.site
+  backend:
+    name: frontend
+    port: 80
+
+grafana: 
+  host: grafana.r-shy-t.site
+  backend: 
+    name: grafana
+    port: 80
