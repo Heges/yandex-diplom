@@ -24,7 +24,7 @@ release:
     - helm lint .
     - helm package --dependency-update .
   script:
-    - curl -u "$NEXUS_REPO_USER":"$NEXUS_REPO_PASS" "$NEXUS_HELM_REPO" --upload-file momo-store-$VERSION.tgz -v
+    - "curl -u \"$NEXUS_REPO_USER:$NEXUS_REPO_PASS\" --upload-file \"/opt/k8s-helm/sausage-store-$VERSION.tgz\" \"$NEXUS_REPO_URL/repository/$NEXUS_REPO_HELM/momo-store-$VERSION.tgz\" -v"
 
 deploy-to-k8s:
   stage: deploy
@@ -40,7 +40,7 @@ deploy-to-k8s:
     - export BACKEND=$(helm get values -n momo-store momo-store -o json | jq -r .backend.image.tag)
     - export FRONTEND=$(helm get values -n momo-store momo-store -o json | jq -r .frontend.image.tag)
   script:
-    - helm repo add nexus "$NEXUS_HELM_REPO" --username "$NEXUS_REPO_USER" --password "$NEXUS_REPO_PASS"
+    - helm repo add nexus "$NEXUS_REPO_URL/repository/$NEXUS_REPO_HELM/" --username "$NEXUS_REPO_USER" --password "$NEXUS_REPO_PASS"
     - helm repo update
     - helm search repo nexus
     - helm upgrade --dependency-update --install --atomic -n momo-store momo-store nexus/momo-store --set backend.image.tag=$BACKEND --set frontend.image.tag=$FRONTEND 
