@@ -1,0 +1,8 @@
+---
+apiVersion: v2
+type: application
+name: backend
+description: Momo Backend Chart
+
+version: "${VERSION}"
+appVersion: "latest"

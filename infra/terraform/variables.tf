@@ -13,6 +13,11 @@ variable "yc_folder_id" {
   sensitive   = true
 }
 
+variable "s3_secret" {
+  type        = string
+  sensitive   = true
+}
+
 variable "zone" {
   type        = string
   default     = "ru-central1-a"

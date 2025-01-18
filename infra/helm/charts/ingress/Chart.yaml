@@ -1,0 +1,8 @@
+---
+apiVersion: v2
+type: application
+name: ingress
+description: Momo Ingress Chart
+
+version: "${VERSION}"
+appVersion: "latest"

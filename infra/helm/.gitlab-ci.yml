@@ -1,0 +1,45 @@
+stages:
+  - release
+  - deploy
+
+variables:
+  VERSION: 1.0.${CI_PIPELINE_ID}
+
+release:
+  stage: release
+  image: alpine/helm:3.16.2
+  before_script:
+    - apk add gettext bash curl
+    - cd infra/helm
+    - envsubst < Chart.yaml > Chart_substituted.yaml
+    - envsubst < templates/secrets.yaml > templates/secrets_substituted.yaml
+    - envsubst < charts/backend/Chart.yaml > charts/backend/Chart_substituted.yaml
+    - envsubst < charts/frontend/Chart.yaml > charts/frontend/Chart_substituted.yaml
+    - envsubst < charts/ingress/Chart.yaml > charts/ingress/Chart_substituted.yaml
+    - mv Chart_substituted.yaml Chart.yaml
+    - mv templates/secrets_substituted.yaml templates/secrets.yaml
+    - mv charts/backend/Chart_substituted.yaml charts/backend/Chart.yaml
+    - mv charts/frontend/Chart_substituted.yaml  charts/frontend/Chart.yaml
+    - mv charts/ingress/Chart_substituted.yaml  charts/ingress/Chart.yaml
+    - helm lint .
+    - helm package --dependency-update .
+  script:
+    - curl -u "$NEXUS_REPO_USER":"$NEXUS_REPO_PASS" "$NEXUS_HELM_REPO" --upload-file momo-store-$VERSION.tgz -v
+
+deploy-to-k8s:
+  stage: deploy
+  image: alpine/helm:3.16.2
+  before_script:
+    - apk add jq
+    - mkdir -p .kube
+    - echo "$KUBECONFIG" | base64 -d > .kube/config
+    - chmod 600 .kube/config
+    - export BACKEND=$(helm get values -n momo-store momo-store -o json | jq -r .backend.image.tag)
+    - export FRONTEND=$(helm get values -n momo-store momo-store -o json | jq -r .frontend.image.tag)
+  script:
+    - cd infra/helm
+    - helm repo update
+    - helm upgrade --dependency-update --install --atomic -n momo-store momo-store . --set backend.image.tag=$BACKEND --set frontend.image.tag=$FRONTEND
+    - rm ~/.kube/config
+  when:
+    manual
