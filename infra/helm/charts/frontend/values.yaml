@@ -1,5 +1,4 @@
-image: 
-  project: momo-frontend
+imageName: momo-frontend
 prometheus_exporter: nginx/nginx-prometheus-exporter:0.10.0
 annotations:
   prometheus.io/path: /metrics
@@ -14,6 +13,6 @@ resources:
   requests:
     memory: 100Mi
     cpu: 25m
-proxy:
+app:
   host: backend
   port: 8081
