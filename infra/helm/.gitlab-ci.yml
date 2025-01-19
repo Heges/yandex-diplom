@@ -35,6 +35,7 @@ deploy-to-k8s:
     - mkdir -p .kube
     - echo "$KUBECONF" | base64 -d > .kube/config
     - export KUBECONFIG=.kube/config
+    - echo $KUBECONFIG
     - chmod 600 .kube/config
     - cat .kube/config
     - export BACKEND=$(helm get values -n momo-store momo-store -o json | jq -r .backend.image.tag)
