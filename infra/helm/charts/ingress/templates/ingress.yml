@@ -2,19 +2,16 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ .Chart.Name }}
+  name: {{ .Chart.Name }}-app
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt
     acme.cert-manager.io/http01-edit-in-place: "true"
 spec:
   ingressClassName: nginx
   tls:
-  - hosts:
-    - {{ .Values.app.host }}
-    secretName: tls-secret-app
-  - hosts:
-    - {{ .Values.grafana.host }}
-    secretName: tls-secret-grafana
+    - hosts:
+      - {{ .Values.app.host }}
+      secretName: momo-tls
   rules:
     - host: {{ .Values.app.host }}
       http:
@@ -26,6 +23,23 @@ spec:
                 name: {{ .Values.app.backend.name }}
                 port:
                   number: {{ .Values.app.backend.port }}
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Chart.Name }}-grafana
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    acme.cert-manager.io/http01-edit-in-place: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+      - {{ .Values.grafana.host }}
+      secretName: grafana-tls
+  rules:
     - host: {{ .Values.grafana.host }}
       http:
         paths:

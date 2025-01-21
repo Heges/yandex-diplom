@@ -1,5 +1,5 @@
 imageName: momo-frontend
-prometheus_exporter: nginx/nginx-prometheus-exporter:0.10.0
+prometheus_exporter: nginx/nginx-prometheus-exporter:1.4
 annotations:
   prometheus.io/path: /metrics
   prometheus.io/port: "9113"
