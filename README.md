@@ -20,7 +20,7 @@ go test -v ./...
 
 ## CI/CD
 
-- используется единый [репозиторий](https://gitlab.praktikum-services.ru/antona-zateyev/momo-store)
+- используется единый [репозиторий](https://gitlab.praktikum-services.ru/std-030-18/diplom)
 - при изменениях в соответствующих директориях триггерятся pipeline для backend, frontend и infrastructure (momo-store-helm) где деплой проходит в manual режиме
 - backend и frontend проходят этапы сборки, тестирования, релиза, деплоя в dev-окружение (docker-compose) и prod-окружение (k8s)
 
