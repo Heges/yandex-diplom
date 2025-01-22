@@ -35,16 +35,12 @@ deploy-to-k8s:
     - mkdir -p .kube
     - echo "$KUBECONF" | base64 -d > .kube/config
     - export KUBECONFIG=.kube/config
-    - echo $KUBECONFIG
     - chmod 600 .kube/config
-    - cat .kube/config
-    - export BACKEND=$(helm get values -n momo-store momo-store -o json | jq -r .backend.image.tag)
-    - export FRONTEND=$(helm get values -n momo-store momo-store -o json | jq -r .frontend.image.tag)
   script:
     - helm repo add nexus "$NEXUS_REPO_URL/repository/$NEXUS_REPO_HELM/" --username "$NEXUS_REPO_USER" --password "$NEXUS_REPO_PASS"
     - helm repo update
     - helm search repo nexus
-    - helm upgrade --dependency-update --install --atomic -n momo-store --debug --create-namespace momo-store nexus/momo-store --set backend.image.tag=$BACKEND --set frontend.image.tag=$FRONTEND 
+    - helm upgrade --install momo-store nexus/momo-store -n momo-store --set backend.imageTag=$CI_COMMIT_SHA --set frontend.imageTag=$CI_COMMIT_SHA --atomic --debug
     - rm .kube/config
   when:
     manual

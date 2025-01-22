@@ -6,7 +6,6 @@ RUN npm install \
     && ls -lahh \
     && ls -lahh /frontend/dist
     
-FROM nginx:stable
-WORKDIR /app
+FROM nginx:1.21.6-alpine
 COPY --from=builder /frontend/dist /usr/share/nginx/html
 EXPOSE 80

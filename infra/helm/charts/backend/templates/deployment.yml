@@ -17,20 +17,20 @@ spec:
   revisionHistoryLimit: {{ .Values.global.revisionHistoryLimit }}
   replicas: {{ .Values.replicas }}
   strategy:
-{{ toYaml .Values.strategy | indent 4 }}
+{{ toYaml .Values.strategy | indent 4 }} 
   selector:
     matchLabels:
       app: {{ .Chart.Name }}
   template:
     metadata:
       annotations:
-{{ toYaml .Values.annotations | indent 8 }}
+{{ toYaml .Values.annotations | indent 8 }} 
       labels:
         app: {{ .Chart.Name }}
     spec:
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.global.repository }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
+          image: "{{ .Values.global.repository }}/{{ .Values.imageName }}:{{ .Values.imageTag }}"
           imagePullPolicy: {{ .Values.global.imagePullPolicy }}
           ports:
             - name: {{ .Chart.Name }}
