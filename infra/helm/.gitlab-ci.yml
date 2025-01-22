@@ -40,7 +40,7 @@ deploy-to-k8s:
     - helm repo add nexus "$NEXUS_REPO_URL/repository/$NEXUS_REPO_HELM/" --username "$NEXUS_REPO_USER" --password "$NEXUS_REPO_PASS"
     - helm repo update
     - helm search repo nexus
-    - helm upgrade --dependency-update --install --atomic -n momo-store --debug --create-namespace momo-store nexus/momo-store --set backend.image.tag=$BACKEND --set frontend.image.tag=$FRONTEND 
+    - helm upgrade --install momo-store nexus/momo-store -n momo-store --set backend.imageTag=$CI_COMMIT_SHA --set frontend.imageTag=$CI_COMMIT_SHA --atomic --debug
     - rm .kube/config
   when:
     manual
