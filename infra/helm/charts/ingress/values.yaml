@@ -4,8 +4,8 @@ app:
     name: frontend
     port: 80
 
-grafana: 
+grafana:
   host: grafana.r-shy-t.site
-  backend: 
+  backend:
     name: grafana
     port: 3000
