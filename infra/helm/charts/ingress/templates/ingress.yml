@@ -5,7 +5,6 @@ metadata:
   name: {{ .Chart.Name }}-app
 spec:
   ingressClassName: nginx
-      secretName: momo-tls
   rules:
     - host: {{ .Values.app.host }}
       http:
@@ -17,7 +16,6 @@ spec:
                 name: {{ .Values.app.backend.name }}
                 port:
                   number: {{ .Values.app.backend.port }}
-
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
