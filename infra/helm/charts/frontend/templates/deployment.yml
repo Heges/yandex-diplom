@@ -30,7 +30,7 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.global.repository }}/{{ .Values.image.project }}:{{ .Values.image.tag }}"
+          image: "{{ .Values.global.repository }}/{{ .Values.imageName }}:{{ .Values.imageTag }}"
           imagePullPolicy: {{ .Values.global.imagePullPolicy }}
           ports:
             - name: {{ .Chart.Name }}
